@@ -7,7 +7,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options"
 )
 
-//go:embed all:frontend/dist
+//go:embed all:interface/dist
 var assets embed.FS
 
 //go:embed build/appicon.png
@@ -29,7 +29,6 @@ func main() {
 			app,
 		},
 	})
-
 	if err != nil {
 		println("Error:", err.Error())
 	}

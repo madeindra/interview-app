@@ -1,4 +1,4 @@
-module github.com/madeindra/interview-app 
+module github.com/madeindra/interview-app
 
 go 1.21
 
