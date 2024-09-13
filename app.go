@@ -2,12 +2,19 @@ package main
 
 import (
 	"context"
-	"fmt"
+
+	"github.com/madeindra/interview-app/internal/database"
+	"github.com/madeindra/interview-app/internal/elevenlabs"
+	"github.com/madeindra/interview-app/internal/model"
+	"github.com/madeindra/interview-app/internal/openai"
 )
 
 // App struct
 type App struct {
-	ctx context.Context
+	ctx    context.Context
+	model  *model.Model
+	oaiAPI *openai.OpenAI
+	elAPI  *elevenlabs.ElevenLab
 }
 
 // NewApp creates a new App application struct
@@ -17,8 +24,13 @@ func NewApp() *App {
 
 // startup is called at application startup
 func (a *App) startup(ctx context.Context) {
-	// Perform your setup here
 	a.ctx = ctx
+
+	db := database.New()
+	a.model = model.New(db)
+
+	a.oaiAPI = openai.New()
+	a.elAPI = elevenlabs.New()
 }
 
 // domReady is called after front-end resources have been loaded
@@ -36,9 +48,4 @@ func (a *App) beforeClose(ctx context.Context) (prevent bool) {
 // shutdown is called at application termination
 func (a *App) shutdown(ctx context.Context) {
 	// Perform your teardown here
-}
-
-// Greet returns a greeting for the given name
-func (a *App) Greet(name string) string {
-	return fmt.Sprintf("Hello %s, It's show time!", name)
 }
