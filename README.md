@@ -3,6 +3,9 @@
 
 This is a desktop port of a mock interview application.
 
+![Application Preview](./preview.png)
+
+
 ## Installation
 
 To run this application, you'll need to have Wails installed on your system. Wails is a framework for building desktop applications using Go and web technologies.
