@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-
+import { ConfirmStartOver, Status } from '../js/wailsjs/go/main/App';
+import { model } from '../js/wailsjs/go/models';
 interface NavbarProps {
   backendHost: string;
   showBackIcon?: boolean;
@@ -10,16 +11,6 @@ interface NavbarProps {
   onStartOver?: () => void;
   disableBack?: boolean;
   disableForward?: boolean;
-}
-
-interface StatusResponse {
-  message: string;
-  data: {
-    backend: boolean;
-    api: boolean | null;
-    apiStatus: string | null;
-    key: boolean;
-  };
 }
 
 const Navbar: React.FC<NavbarProps> = ({
@@ -33,18 +24,14 @@ const Navbar: React.FC<NavbarProps> = ({
   disableBack = false,
   disableForward = false
 }) => {
-  const [status, setStatus] = useState<StatusResponse['data'] | null>(null);
+  const [status, setStatus] = useState<model.StatusResponse | null>(null);
   const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const response = await fetch(`${backendHost}/chat/status`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data: StatusResponse = await response.json();
-        setStatus(data.data);
+        const response = await Status();
+        setStatus(response);
       } catch (error) {
         console.error('Error fetching status:', error);
         setStatus(null);
@@ -59,7 +46,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
   const getStatusColor = () => {
     if (!status) return 'bg-red-500';
-    if (status.backend && status.api === true && status.key) return 'bg-green-500';
+    if (status.server && status.api === true && status.key) return 'bg-green-500';
     if (status.api === false) return 'bg-orange-500';
     return 'bg-red-500';
   };
@@ -84,10 +71,10 @@ const Navbar: React.FC<NavbarProps> = ({
     }
   }
 
-  const handleStartOver = () => {
+  const handleStartOver = async () => {
     if (onStartOver) {
-      const isConfirmed = window.confirm("Are you sure you want to start over the interview?");
-      if (isConfirmed) {
+      const isConfirmed = await ConfirmStartOver();
+      if (isConfirmed === "Yes" || isConfirmed === "Ok" || isConfirmed === "Continue") {
         onStartOver();
       }
     }
@@ -123,7 +110,7 @@ const Navbar: React.FC<NavbarProps> = ({
         >
           {showTooltip && (
             <div className="absolute top-full right-2 mt-2 p-2 bg-white text-black rounded shadow-lg z-10">
-              <p>Database: {status?.backend ? 'Up' : 'Down'}</p>
+              <p>Database: {status?.server ? 'Up' : 'Down'}</p>
               <p>API: {status?.api === null ? 'Unknown' : (status?.api ? 'Up' : 'Down')}</p>
               <p>Status: {status?.apiStatus ? capitalizeFirstLetter(status?.apiStatus) : 'Unknown'}</p>
               <p>Authorized: {status?.key ? 'Yes' : 'No'}</p>

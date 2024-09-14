@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import AnimatedText from './AnimatedText';
 import Navbar from './Navbar';
 import { Message, useInterviewStore } from '../store';
+import { AnswerChat, EndChat } from '../js/wailsjs/go/main/App';
 
 interface ChatScreenProps {
   backendHost: string;
@@ -30,7 +31,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ backendHost, setError }) => {
     if (!isIntroDone) {
       if (initialAudio && initialAudio !== 'undefined') {
         playAudio(initialAudio);
-      } 
+      }
 
       setIsIntroDone(true);
     }
@@ -53,7 +54,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ backendHost, setError }) => {
       };
 
       mediaRecorderRef.current.onstop = () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
         sendAudioToServer(audioBlob);
       };
 
@@ -73,40 +74,23 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ backendHost, setError }) => {
   };
 
   const sendAudioToServer = async (audioBlob: Blob) => {
-    const formData = new FormData();
-    formData.append('file', audioBlob, 'audio.webm');
-
-    const authString = btoa(`${interviewId}:${interviewSecret}`);
-
     setIsProcessing(true);
 
     try {
-      const response = await fetch(`${backendHost}/chat/answer`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${authString}`,
-        },
-        body: formData,
-      });
+      const audioArray = new Uint8Array(await audioBlob.arrayBuffer());
+      const response = await AnswerChat(interviewId, interviewSecret, Array.from(audioArray));
 
-      const data = await response.json();
+      const userMessage: Message = { text: response?.prompt?.text ?? '', isUser: true };
+      const botMessage: Message = { text: response?.answer?.text ?? '', isUser: false, isAnimated: true };
 
-      if (response.ok && data.data) {
-        const userMessage: Message = { text: data.data.prompt.text, isUser: true };
-        const botMessage: Message = { text: data.data.answer.text, isUser: false, isAnimated: true };
+      addMessage(userMessage);
+      addMessage(botMessage);
 
-        addMessage(userMessage);
-        addMessage(botMessage);
-
-        if (data?.data?.answer?.audio) {
-          playAudio(data.data.answer.audio);
-        }
-
-        setHasStarted(true);
-      } else {
-        const errorMessage = data.message || 'Failed to process your response. Please try again.';
-        setError(errorMessage);
+      if (response?.answer?.audio) {
+        playAudio(response.answer.audio);
       }
+
+      setHasStarted(true);
     } catch (error) {
       console.error('Error sending audio:', error);
       setError('Failed to send your response. Please check your connection and try again.');
@@ -125,32 +109,20 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ backendHost, setError }) => {
   };
 
   const endInterview = async () => {
-    const authString = btoa(`${interviewId}:${interviewSecret}`);
-
     setIsProcessing(true);
 
     try {
-      const response = await fetch(`${backendHost}/chat/end`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Basic ${authString}`,
-        },
-      });
+      const response = await EndChat(interviewId, interviewSecret)
 
-      const data = await response.json();
+      const botMessage: Message = { text: response?.answer?.text ?? '', isUser: false, isAnimated: true };
+      addMessage(botMessage);
 
-      if (response.ok && data.data) {
-        const botMessage: Message = { text: data.data.answer.text, isUser: false, isAnimated: true };
-        addMessage(botMessage);
-
-        if (data?.data?.answer?.audio) {
-          playAudio(data.data.answer.audio);
-        }
-
-        setHasEnded(true);
-      } else {
-        setError(data.message || 'Failed to end the interview. Please try again.');
+      if (response?.answer?.audio) {
+        playAudio(response.answer.audio);
       }
+
+      setHasEnded(true);
+
     } catch (error) {
       console.error('Error ending interview:', error);
       setError('Failed to end the interview. Please check your connection and try again.');

@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from './Navbar';
+
+import { AreKeyExist, StartChat } from '../js/wailsjs/go/main/App';
+
 import { useInterviewStore } from '../store';
+
+import Navbar from './Navbar';
+
 
 interface StartScreenProps {
   backendHost: string;
@@ -14,7 +19,7 @@ const languageOptions = [
 ];
 
 const StartScreen: React.FC<StartScreenProps> = ({ backendHost, setError }) => {
-  const { role, skills, language, messages, setIsIntroDone, setMessages, setRole, setSkills, setLanguage, setInterviewId, setInterviewSecret, setInitialAudio, setInitialText } = useInterviewStore();
+  const { role, skills, language, messages, setHasEnded, setIsIntroDone, setMessages, setRole, setSkills, setLanguage, setInterviewId, setInterviewSecret, setInitialAudio, setInitialText } = useInterviewStore();
 
   const navigate = useNavigate();
 
@@ -27,35 +32,24 @@ const StartScreen: React.FC<StartScreenProps> = ({ backendHost, setError }) => {
     navigate('/processing');
 
     try {
-      const response = await fetch(`${backendHost}/chat/start`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ role, skills: skillsArray, language }),
-      });
+      const response = await StartChat(role, skillsArray, language);
+        
+        setInterviewId(response?.id);
+        setInterviewSecret(response?.secret);
+        
+        setInitialAudio(response?.audio);
+        setInitialText(response?.text);
+        setLanguage(response?.language);
 
-      const data = await response.json();
-
-      if (response.ok && data.data) {
-        setInterviewId(data.data?.id);
-        setInterviewSecret(data.data?.secret);
-        setInitialAudio(data.data?.audio);
-        setInitialText(data.data?.text);
-        setLanguage(data.data?.language);
-
-        setMessages([{ text: data.data?.text, isUser: false, isAnimated: true }]);
+        setMessages([{ text: response?.text, isUser: false, isAnimated: true }]);
         setIsIntroDone(false);
+        setHasEnded(false);
 
         navigate('/chat');
-      } else {
-        const errorMessage = data.message || 'Failed processing your request, please try again';
-        setError(errorMessage);
-        navigate('/');
-      }
     } catch (error) {
       console.error('Error starting interview:', error);
       setError('Failed processing your request, please try again');
+      
       navigate('/');
     }
   };
@@ -63,6 +57,22 @@ const StartScreen: React.FC<StartScreenProps> = ({ backendHost, setError }) => {
   const handleForward = () => {
     navigate('/chat');
   };
+
+  const checkAPIKeys = async () => {
+    try {
+        const response = await AreKeyExist();
+        if (!response) {
+            console.log("API keys not found, redirecting to setting")
+            navigate('/setting');
+        }
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+useEffect(() => {
+    checkAPIKeys();
+}, []);
 
   return (
     <div className="flex flex-col h-screen bg-[#1E1E2E] text-white">
