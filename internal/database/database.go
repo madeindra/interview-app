@@ -12,7 +12,7 @@ const (
 	CREATE TABLE IF NOT EXISTS settings (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		openai_key VARCHAR DEFAULT '',
-		elevenlabs_key VARCHAR DEFAULT '',
+		elevenlabs_key VARCHAR DEFAULT ''
 	);`
 
 	settingsData = "SELECT id, openai_key, elevenlabs_key FROM settings LIMIT 1;"
@@ -40,6 +40,9 @@ func New() *sql.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	migrate(db)
+
 	return db
 }
 
