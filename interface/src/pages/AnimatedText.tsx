@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Message } from '../store';
 
-const useTypingEffect = (message: Message, speed: number = 50) => {
+const useTypingEffect = (message: Message, speed: number = 5) => {
     const [displayedText, setDisplayedText] = useState('');
 
     useEffect(() => {
