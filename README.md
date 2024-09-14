@@ -1,26 +1,43 @@
-## About
 
-Wails template which includes: Vite, React, TS, TailwindCSS out of the box.
+# Interview Application
 
-Build with `Wails CLI v2.0.0`.
+This is a desktop port of a mock interview application.
 
-To use this [template](https://wails.io/docs/community/templates):
-```shell
-wails init -n "Your Project Name" -t https://github.com/hotafrika/wails-vite-react-ts-tailwind-template
-cd frontend/src
-npm install
-```
+## Installation
 
-[Here](scripts) you can find useful scripts for building on different platforms and Wails CLI installation.
+To run this application, you'll need to have Wails installed on your system. Wails is a framework for building desktop applications using Go and web technologies.
 
-## Live Development
+### Installing Wails
 
-To run in live development mode, run `wails dev` in the project directory. In another terminal, go into the `frontend`
-directory and run `npm run dev`. The frontend dev server will run on http://localhost:34115. Connect to this in your
-browser and connect to your application.
+1. Make sure you have Go installed on your system (version 1.16 or later).
+2. Open a terminal and run the following command to install Wails:
 
-## Building
+   ```
+   go install github.com/wailsapp/wails/v2/cmd/wails@latest
+   ```
 
-To build a redistributable, production mode package, use `wails build`.
+3. Verify the installation by running:
 
+   ```
+   wails version
+   ```
 
+### Running the Application
+
+1. Clone this repository to your local machine.
+2. Navigate to the project directory in your terminal.
+3. Run the following command to start the application in development mode:
+
+   ```
+   wails dev
+   ```
+
+   This will compile and run the application, allowing you to make changes and see them in real-time.
+
+4. To build a production version of the application, use:
+
+   ```
+   wails build
+   ```
+
+   This will create an executable in the `build/bin` directory.
