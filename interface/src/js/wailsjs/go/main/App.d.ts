@@ -6,6 +6,8 @@ export function AnswerChat(arg1:string,arg2:string,arg3:Array<number>):Promise<m
 
 export function AreKeyExist():Promise<boolean>;
 
+export function ConfirmStartOver():Promise<string>;
+
 export function EndChat(arg1:string,arg2:string):Promise<model.AnswerChatResponse>;
 
 export function StartChat(arg1:string,arg2:Array<string>,arg3:string):Promise<model.StartChatResponse>;

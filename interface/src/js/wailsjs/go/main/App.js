@@ -10,6 +10,10 @@ export function AreKeyExist() {
   return window['go']['main']['App']['AreKeyExist']();
 }
 
+export function ConfirmStartOver() {
+  return window['go']['main']['App']['ConfirmStartOver']();
+}
+
 export function EndChat(arg1, arg2) {
   return window['go']['main']['App']['EndChat'](arg1, arg2);
 }

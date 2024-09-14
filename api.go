@@ -9,6 +9,8 @@ import (
 	"github.com/madeindra/interview-app/internal/language"
 	"github.com/madeindra/interview-app/internal/model"
 	oaiModel "github.com/madeindra/interview-app/internal/openai/model"
+
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 func (a *App) AreKeyExist() (bool, error) {
@@ -305,4 +307,16 @@ func (a *App) EndChat(userID, userSecret string) (model.AnswerChatResponse, erro
 	}
 
 	return response, nil
+}
+
+func (a *App) ConfirmStartOver() (string, error) {
+	result, err := runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+		Type:          runtime.QuestionDialog,
+		Title:         "Start Over",
+		Message:       "Are you sure you want to start over the interview?",
+		Buttons:       []string{"Yes", "No"},
+		DefaultButton: "No",
+	})
+
+	return result, err
 }
