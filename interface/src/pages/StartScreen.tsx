@@ -9,7 +9,6 @@ import Navbar from './Navbar';
 
 
 interface StartScreenProps {
-  backendHost: string;
   setError: (error: string | null) => void;
 }
 
@@ -18,7 +17,7 @@ const languageOptions = [
   { name: "Bahasa Indonesia", code: "id-ID" },
 ];
 
-const StartScreen: React.FC<StartScreenProps> = ({ backendHost, setError }) => {
+const StartScreen: React.FC<StartScreenProps> = ({ setError }) => {
   const { role, skills, language, messages, setHasEnded, setIsIntroDone, setMessages, setRole, setSkills, setLanguage, setInterviewId, setInterviewSecret, setInitialAudio, setInitialText } = useInterviewStore();
 
   const navigate = useNavigate();
@@ -78,7 +77,6 @@ useEffect(() => {
     <div className="flex flex-col h-screen bg-[#1E1E2E] text-white">
       {messages.length > 0 && (
         <Navbar
-          backendHost={backendHost}
           showBackIcon
           showForwardIcon
           onForward={handleForward}

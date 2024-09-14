@@ -6,11 +6,10 @@ import { Message, useInterviewStore } from '../store';
 import { AnswerChat, EndChat } from '../js/wailsjs/go/main/App';
 
 interface ChatScreenProps {
-  backendHost: string;
   setError: (error: string | null) => void;
 }
 
-const ChatScreen: React.FC<ChatScreenProps> = ({ backendHost, setError }) => {
+const ChatScreen: React.FC<ChatScreenProps> = ({ setError }) => {
   const { messages, initialText, initialAudio, isIntroDone, interviewId, interviewSecret, hasEnded, addMessage, setIsIntroDone, setHasEnded, resetStore } = useInterviewStore();
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -148,7 +147,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ backendHost, setError }) => {
   return (
     <div className="flex flex-col h-screen bg-[#1E1E2E] text-white">
       <Navbar
-        backendHost={backendHost}
         showBackIcon
         showForwardIcon
         showStartOver
