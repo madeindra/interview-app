@@ -102,14 +102,18 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ setError }) => {
     }
 
     // Stop any currently playing audio
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
+    stopAudio();
 
     // Create a new audio element and play the audio
     audioRef.current = new Audio(`data:audio/mp3;base64,${base64Audio}`);
     audioRef.current.play();
+  };
+
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
   };
 
   const endInterview = async () => {
@@ -126,7 +130,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ setError }) => {
       }
 
       setHasEnded(true);
-
     } catch (error) {
       console.error('Error ending interview:', error);
       setError('Failed to end the interview. Please check your connection and try again.');
@@ -136,11 +139,13 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ setError }) => {
   };
 
   const handleStartOver = () => {
+    stopAudio();
     resetStore();
     navigate('/');
   };
 
   const handleBack = () => {
+    stopAudio();
     navigate('/');
   };
 
@@ -152,6 +157,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ setError }) => {
         showStartOver
         onBack={handleBack}
         onStartOver={handleStartOver}
+        onSetting={stopAudio}
         disableForward={true}
       />
       <div ref={chatContainerRef} className="flex-grow overflow-y-auto px-4 py-2">

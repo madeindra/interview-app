@@ -9,6 +9,7 @@ interface NavbarProps {
   showStartOver?: boolean;
   onBack?: () => void;
   onForward?: () => void;
+  onSetting?: () => void;
   onStartOver?: () => void;
   disableBack?: boolean;
   disableForward?: boolean;
@@ -21,6 +22,7 @@ const Navbar: React.FC<NavbarProps> = ({
   showStartOver = false,
   onBack,
   onForward,
+  onSetting,
   onStartOver,
   disableBack = false,
   disableForward = false
@@ -84,6 +86,10 @@ const Navbar: React.FC<NavbarProps> = ({
   };
 
   const handleSettings = () => {
+    if (onSetting) {
+      onSetting();
+    }
+
     navigate('/setting');
   }
 
