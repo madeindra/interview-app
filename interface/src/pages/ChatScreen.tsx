@@ -28,11 +28,16 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ setError }) => {
   }, [navigate, initialText]);
 
   useEffect(() => {
-    if (!isIntroDone && initialAudio && initialAudio !== 'undefined') {
-      playAudio(initialAudio);
+    if (!isIntroDone) {
+      if (initialAudio && initialAudio !== 'undefined') {
+        playAudio(initialAudio);
+      } else if (initialText) {
+        synthesizeSpeech(initialText, language);
+      }
+
       setIsIntroDone(true);
     }
-  }, [isIntroDone, initialAudio, setIsIntroDone]);
+  }, [isIntroDone, initialAudio, initialText, language, setIsIntroDone]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -129,7 +134,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ setError }) => {
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = language;
-    utterance.rate = 1.2;
+    utterance.rate = 1.1;
     window.speechSynthesis.speak(utterance);
   };
 
