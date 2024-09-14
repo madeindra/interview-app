@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import { useInterviewStore } from '../store';
-import { AreKeyExist, UpdateAPIKeys } from '../js/wailsjs/go/main/App';
+import { UpdateAPIKeys } from '../js/wailsjs/go/main/App';
 
 interface SettingScreenProps {
-    backendHost: string;
     setError: (error: string | null) => void;
 }
 
-const SettingScreen: React.FC<SettingScreenProps> = ({ backendHost, setError }) => {
+const SettingScreen: React.FC<SettingScreenProps> = ({ setError }) => {
     const { messages } = useInterviewStore();
 
     const [openaiKeyInput, setOpenaiKeyInput] = useState('');
@@ -22,37 +21,30 @@ const SettingScreen: React.FC<SettingScreenProps> = ({ backendHost, setError }) 
 
         try {
             await UpdateAPIKeys(openaiKeyInput, elevenlabsKeyInput);
-            navigate('/');
+
+            if (messages.length > 0) {
+                navigate('/chat');
+            } else {
+                navigate('/');
+            }
         } catch (error) {
             setError('Failed to save settings. Please check your connection and try again.');
         }
     };
 
-    const checkAPIKeys = async () => {
-        try {
-            const response = await AreKeyExist();
-            if (response) {
-                console.log("API keys found, redirecting to home")
-                navigate('/');
-            }
-        } catch (error) {
-            console.error(error);
-        }
+    const handleBack = () => {
+        navigate('/chat');
     };
-
-    useEffect(() => {
-        checkAPIKeys();
-    }, []);
-
 
     return (
         <div className="flex flex-col h-screen bg-[#1E1E2E] text-white">
             {messages.length > 0 && (
                 <Navbar
-                    backendHost={backendHost}
                     showBackIcon
                     showForwardIcon
-                    disableBack={true}
+                    showSettingIcon={false}
+                    disableForward={true}
+                    onBack={handleBack}
                 />
             )}
             <div className="container mx-auto mt-10 p-4 flex-grow">
@@ -67,7 +59,7 @@ const SettingScreen: React.FC<SettingScreenProps> = ({ backendHost, setError }) 
                                 type="password"
                                 id="openai-key"
                                 value={openaiKeyInput}
-                                placeholder='sk-...'
+                                placeholder='sk-proj-...'
                                 onChange={(e) => setOpenaiKeyInput(e.target.value)}
                                 className="w-full p-3 bg-[#3A3A4E] text-white border border-[#4A4A5E] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E64FF]"
                             />
@@ -80,7 +72,7 @@ const SettingScreen: React.FC<SettingScreenProps> = ({ backendHost, setError }) 
                                 type="password"
                                 id="elevenlabs-key"
                                 value={elevenlabsKeyInput}
-                                placeholder='sk-...'
+                                placeholder='sk_...'
                                 onChange={(e) => setElevenlabsKeyInput(e.target.value)}
                                 className="w-full p-3 bg-[#3A3A4E] text-white border border-[#4A4A5E] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E64FF]"
                             />

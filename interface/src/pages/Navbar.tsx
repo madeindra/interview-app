@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { ConfirmStartOver, Status } from '../js/wailsjs/go/main/App';
 import { model } from '../js/wailsjs/go/models';
+import { useNavigate } from 'react-router-dom';
 interface NavbarProps {
-  backendHost: string;
   showBackIcon?: boolean;
   showForwardIcon?: boolean;
+  showSettingIcon?: boolean;
   showStartOver?: boolean;
   onBack?: () => void;
   onForward?: () => void;
@@ -14,9 +15,9 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({
-  backendHost,
   showBackIcon = false,
   showForwardIcon = false,
+  showSettingIcon = true,
   showStartOver = false,
   onBack,
   onForward,
@@ -26,6 +27,8 @@ const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [status, setStatus] = useState<model.StatusResponse | null>(null);
   const [showTooltip, setShowTooltip] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -42,7 +45,7 @@ const Navbar: React.FC<NavbarProps> = ({
     const intervalId = setInterval(fetchStatus, 30000); // Fetch every 30 seconds
 
     return () => clearInterval(intervalId);
-  }, [backendHost]);
+  }, []);
 
   const getStatusColor = () => {
     if (!status) return 'bg-red-500';
@@ -79,6 +82,10 @@ const Navbar: React.FC<NavbarProps> = ({
       }
     }
   };
+
+  const handleSettings = () => {
+    navigate('/setting');
+  }
 
   return (
     <nav className="bg-dark-surface p-4 flex justify-between items-center relative">
@@ -117,6 +124,12 @@ const Navbar: React.FC<NavbarProps> = ({
             </div>
           )}
         </div>
+        {showSettingIcon && (<button 
+          onClick={handleSettings}
+          className="mr-4 text-white hover:text-gray-300"
+        >
+          &#x26ED; {/* Gear icon */}
+        </button>)}
         {showStartOver && (
           <button 
             onClick={handleStartOver} 
