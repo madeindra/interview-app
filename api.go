@@ -81,19 +81,9 @@ func (a *App) StartChat(role string, skills []string, lang string) (model.StartC
 
 	var initialAudio io.Reader
 	if a.oaiAPI.IsSpeechAvailable(chatLanguage) {
-		speech, err := a.oaiAPI.Speechify(oaiKey, sanitizeString(initialText))
-		if err != nil {
-			return model.StartChatResponse{}, fmt.Errorf("failed to create initial audio: %v", err)
-		}
-
-		initialAudio = speech
+		initialAudio, _ = a.oaiAPI.Speechify(oaiKey, sanitizeString(initialText))
 	} else {
-		speech, err := a.elAPI.Speechify(elKey, sanitizeString(initialText))
-		if err != nil {
-			return model.StartChatResponse{}, fmt.Errorf("failed to create initial audio: %v", err)
-		}
-
-		initialAudio = speech
+		initialAudio, _ = a.elAPI.Speechify(elKey, sanitizeString(initialText))
 	}
 
 	var audioBase64 string
@@ -193,15 +183,9 @@ func (a *App) AnswerChat(userID, userSecret string, audioData []byte) (model.Ans
 
 	var speech io.Reader
 	if a.oaiAPI.IsSpeechAvailable(user.Language) {
-		speech, err = a.oaiAPI.Speechify(apiKey, sanitizeString(chatCompletion.Choices[0].Message.Content))
-		if err != nil {
-			return model.AnswerChatResponse{}, fmt.Errorf("failed to create speech: %v", err)
-		}
+		speech, _ = a.oaiAPI.Speechify(apiKey, sanitizeString(chatCompletion.Choices[0].Message.Content))
 	} else {
-		speech, err = a.elAPI.Speechify(elKey, sanitizeString(chatCompletion.Choices[0].Message.Content))
-		if err != nil {
-			return model.AnswerChatResponse{}, fmt.Errorf("failed to create speech: %v", err)
-		}
+		speech, _ = a.elAPI.Speechify(elKey, sanitizeString(chatCompletion.Choices[0].Message.Content))
 	}
 
 	var speechBase64 string
@@ -273,15 +257,9 @@ func (a *App) EndChat(userID, userSecret string) (model.AnswerChatResponse, erro
 
 	var speech io.Reader
 	if a.oaiAPI.IsSpeechAvailable(user.Language) {
-		speech, err = a.oaiAPI.Speechify(apiKey, sanitizeString(chatCompletion.Choices[0].Message.Content))
-		if err != nil {
-			return model.AnswerChatResponse{}, fmt.Errorf("failed to create speech: %v", err)
-		}
+		speech, _ = a.oaiAPI.Speechify(apiKey, sanitizeString(chatCompletion.Choices[0].Message.Content))
 	} else {
-		speech, err = a.elAPI.Speechify(elKey, sanitizeString(chatCompletion.Choices[0].Message.Content))
-		if err != nil {
-			return model.AnswerChatResponse{}, fmt.Errorf("failed to create speech: %v", err)
-		}
+		speech, _ = a.elAPI.Speechify(elKey, sanitizeString(chatCompletion.Choices[0].Message.Content))
 	}
 
 	var speechBase64 string

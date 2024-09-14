@@ -10,7 +10,7 @@ interface ChatScreenProps {
 }
 
 const ChatScreen: React.FC<ChatScreenProps> = ({ setError }) => {
-  const { messages, initialText, initialAudio, isIntroDone, interviewId, interviewSecret, hasEnded, addMessage, setIsIntroDone, setHasEnded, resetStore } = useInterviewStore();
+  const { language, messages, initialText, initialAudio, isIntroDone, interviewId, interviewSecret, hasEnded, addMessage, setIsIntroDone, setHasEnded, resetStore } = useInterviewStore();
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
@@ -85,6 +85,8 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ setError }) => {
 
       if (response?.answer?.audio) {
         playAudio(response.answer.audio);
+      } else if (response?.answer?.text) {
+        synthesizeSpeech(response.answer.text, language);
       }
 
       setHasStarted(true);
@@ -116,6 +118,21 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ setError }) => {
     }
   };
 
+  const synthesizeSpeech = (text: string, language: string) => {
+    if (!text) {
+      return
+    }
+
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = language;
+    utterance.rate = 1.2;
+    window.speechSynthesis.speak(utterance);
+  };
+
   const endInterview = async () => {
     setIsProcessing(true);
 
@@ -127,6 +144,8 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ setError }) => {
 
       if (response?.answer?.audio) {
         playAudio(response.answer.audio);
+      } else if (response?.answer?.text) {
+        synthesizeSpeech(response.answer.text, language);
       }
 
       setHasEnded(true);
