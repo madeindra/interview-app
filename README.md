@@ -41,3 +41,14 @@ To run this application, you'll need to have Wails installed on your system. Wai
    ```
 
    This will create an executable in the `build/bin` directory.
+
+## API Keys
+
+This application uses two APIs:
+
+- OpenAI for generating responses and speech synthesis
+- ElevenLabs for text-to-speech synthesis fallback for non-English languages
+
+OpenAI API key is required to use the application. You can get one [here](https://platform.openai.com/signup).
+
+ElevenLabs API key is optional. You can get one [here](https://elevenlabs.io/signup). When ElevenLabs key is not provided, the application will use the WebSpeech API to generate speech.
