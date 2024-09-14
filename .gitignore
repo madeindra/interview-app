@@ -1,3 +1,4 @@
+*.db
 build/bin
 interface/dist
 interface/node_modules
